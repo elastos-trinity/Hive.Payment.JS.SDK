@@ -1,0 +1,29 @@
+{
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "out-tsc", "typings"],
+  "compilerOptions": {
+    "target": "es2015",
+    "module": "es2015",
+    "lib": ["es2015", "dom"],
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "declaration": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "emitDeclarationOnly": false,
+    "declarationMap": false,
+    "sourceMap": true,
+    "strict": false,
+    "skipLibCheck": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+    "emitDecoratorMetadata": true,
+    "removeComments": true,
+    "isolatedModules": true,
+    "preserveConstEnums": true,
+    "experimentalDecorators": true,
+    "resolveJsonModule": true,
+    "rootDirs": ["src/"],
+    "typeRoots": ["node_modules/@types"]
+  }
+}
