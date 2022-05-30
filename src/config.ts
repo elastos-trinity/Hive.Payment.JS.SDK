@@ -1,8 +1,6 @@
 export class Config {
-    static ELASTOS_API = 'elastos.io';
-    static ELASTOS_BRIDGE = 'https://walletconnect.elastos.net/v2';
-    static BRIDGE = Config.ELASTOS_BRIDGE;
-    private static BASE_API = Config.ELASTOS_API;
+    static BRIDGE = 'https://walletconnect.elastos.net/v2';
+    private static BASE_API = 'elastos.io';
 
     /** MainNet */
     static CONTRACT_URI = 'https://api.' + Config.BASE_API + '/eth';

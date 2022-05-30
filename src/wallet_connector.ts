@@ -4,7 +4,6 @@ import {Config} from "./config";
 import paymentAbi from './order_abi.json';
 import {Logger} from "./logger";
 
-const TAG = 'WalletConnector';
 const LOG = new Logger("WalletConnector");
 
 
@@ -37,7 +36,7 @@ export class WalletConnector {
      */
     constructor(testnet = false) {
         this.setTestMode(testnet);
-        LOG.info('this.rpc: {}', this.rpc);
+        LOG.info('this.rpc: {}, {}, {}', JSON.stringify(this.rpc), this.bridge, this.paymentAddr);
     }
 
     /**

@@ -38,27 +38,6 @@ export class PaymentContract {
 
     async initialize(): Promise<PaymentContract> {
         await this.connector.initialize();
-
-        this.connector.getContract().events.OrderPay(null,
-            function(error, event){
-                LOG.info('events.OrderPay: {}', event);
-            })
-            .on("connected", function(subscriptionId){
-                // events.OrderPay.connected 0xbfd0d15d9085f0c5f4008f6d6b2d460d, sender account.
-                LOG.info('events.OrderPay.connected: {}', subscriptionId);
-            })
-            .on('data', function(event){
-                // same results as the optional callback above
-                LOG.info('events.OrderPay.data: {}', event);
-            })
-            .on('changed', function(event){
-                // remove event from local database
-                LOG.info('events.OrderPay.changed: {}', event);
-            })
-            .on('error', function(error, receipt) {
-                LOG.info('events.OrderPay.error: {}', error, receipt);
-            });
-
         return this;
     }
 
@@ -70,38 +49,30 @@ export class PaymentContract {
      * @param memo The proof from place-order API of the hive node.
      * @return contract order id to settle-order API of the hive node.
      */
-    async payOrder(amount: string, to: string, memo: string) {
-        const orderData = this.connector.getContract().methods.payOrder(to, memo).encodeABI();
-        let transactionParams = await this.createTxParams(orderData, amount, to);
+    payOrder(amount: string, to: string, memo: string): Promise<number> {
+        return new Promise<number>((resolve, reject) => {
+            void (async () => {
+                try {
+                    const orderData = this.connector.getContract().methods.payOrder(to, memo).encodeABI();
+                    let transactionParams = await this.createTxParams(orderData, amount, to);
 
-        LOG.info('after createTxParams: %j, %j', orderData, transactionParams);
+                    LOG.info('after createTxParams: {}, {}', orderData, JSON.stringify(transactionParams));
 
-        // // Can not work with call() because of no transaction sending.
-        // return await this.connector.getContract().methods.payOrder(to, memo).call(transactionParams);
-        // contract.methods.payOrder(to, memo).call(transactionParams, function (error, result) {
-        //     console.log(`payOrder error: ${error}, ${result}`);
-        // });
-
-        // OK with send()
-        this.connector.getContract().methods
-            .payOrder(to, memo)
-            .send(transactionParams)
-            .on('transactionHash', hash => {
-                // transaction id
-                LOG.info('methods.payOrder.transactionHash: {}', hash);
-            })
-            .on('receipt', receipt => {
-                // contains sender wallet address.
-                LOG.info('methods.payOrder.receipt: {}', receipt);
-            })
-            .on('confirmation', (confirmationNumber, receipt) => {
-                // confirmed by other accounts ???
-                LOG.info('methods.payOrder.confirmation: {}, {}', confirmationNumber, receipt);
-            })
-            .on('error', (error, receipt) => {
-                LOG.info('methods.payOrder.error: {}, {}', error, receipt);
-            });
-        return 0;
+                    await this.connector.getContract().methods.payOrder(to, memo).send(transactionParams)
+                        .on('receipt', receipt => {
+                            // contains event "OrderPay"
+                            LOG.info('methods.payOrder.receipt: {}', JSON.stringify(receipt));
+                            resolve(receipt.events.OrderPay.returnValues.orderId);
+                        })
+                        .on('error', (error, receipt) => {
+                            LOG.info('methods.payOrder.error: {}, {}', JSON.stringify(error), JSON.stringify(receipt));
+                            reject(error);
+                        });
+                } catch (error) {
+                    reject(error);
+                }
+            })();
+        });
     }
 
     private async createTxParams(data: string, price: string, to: string): Promise<TransactionData> {
@@ -119,19 +90,15 @@ export class PaymentContract {
             value: price_token,
         };
 
-        try {
-            const txGas = await this.connector.getWeb3().eth.estimateGas(txData);
-            LOG.info(`after this.web3.eth.estimateGas: ${txData}`);
-            const gasPrice = await this.connector.getWeb3().eth.getGasPrice();
-            return  {
-                from: accountAddress,
-                gasPrice: gasPrice,
-                gas: Math.round(txGas * 3),
-                value: price_token,
-            };
-        } catch (error) {
-            throw new Error(`failed to get gas price: ${error}`);
-        }
+        const txGas = await this.connector.getWeb3().eth.estimateGas(txData);
+        LOG.info(`after this.web3.eth.estimateGas: ${JSON.stringify(txData)}`);
+        const gasPrice = await this.connector.getWeb3().eth.getGasPrice();
+        return  {
+            from: accountAddress,
+            gasPrice: gasPrice,
+            gas: Math.round(txGas * 3),
+            value: price_token,
+        };
     }
 
     /**
