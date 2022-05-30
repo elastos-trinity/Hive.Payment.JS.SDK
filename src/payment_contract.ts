@@ -1,9 +1,9 @@
 import {WalletConnector} from "./wallet_connector";
 import Web3 from "web3";
 import BN from "bn.js";
-import {log} from "npmlog";
+import {Logger} from "./logger";
 
-const TAG = 'PaymentContract';
+const LOG = new Logger("PaymentContract");
 
 
 type TransactionData = {
@@ -40,21 +40,23 @@ export class PaymentContract {
         await this.connector.initialize();
 
         this.connector.getContract().events.OrderPay(null,
-            function(error, event){ log.info(TAG, 'events.OrderPay: %j', event); })
+            function(error, event){
+                LOG.info('events.OrderPay: {}', event);
+            })
             .on("connected", function(subscriptionId){
                 // events.OrderPay.connected 0xbfd0d15d9085f0c5f4008f6d6b2d460d, sender account.
-                log.info(TAG, 'events.OrderPay.connected: %j', subscriptionId)
+                LOG.info('events.OrderPay.connected: {}', subscriptionId);
             })
             .on('data', function(event){
                 // same results as the optional callback above
-                log.info(TAG, 'events.OrderPay.data: %j', event)
+                LOG.info('events.OrderPay.data: {}', event);
             })
             .on('changed', function(event){
                 // remove event from local database
-                log.info(TAG, 'events.OrderPay.changed: %j', event)
+                LOG.info('events.OrderPay.changed: {}', event);
             })
             .on('error', function(error, receipt) {
-                log.info(TAG, 'events.OrderPay.error: %j', error, receipt)
+                LOG.info('events.OrderPay.error: {}', error, receipt);
             });
 
         return this;
@@ -72,7 +74,7 @@ export class PaymentContract {
         const orderData = this.connector.getContract().methods.payOrder(to, memo).encodeABI();
         let transactionParams = await this.createTxParams(orderData, amount, to);
 
-        log.info(TAG, 'after createTxParams: %j, %j', orderData, transactionParams)
+        LOG.info('after createTxParams: %j, %j', orderData, transactionParams);
 
         // // Can not work with call() because of no transaction sending.
         // return await this.connector.getContract().methods.payOrder(to, memo).call(transactionParams);
@@ -86,18 +88,18 @@ export class PaymentContract {
             .send(transactionParams)
             .on('transactionHash', hash => {
                 // transaction id
-                log.info(TAG, 'methods.payOrder.transactionHash: %j', hash)
+                LOG.info('methods.payOrder.transactionHash: {}', hash);
             })
             .on('receipt', receipt => {
                 // contains sender wallet address.
-                log.info(TAG, 'methods.payOrder.receipt: %j', receipt)
+                LOG.info('methods.payOrder.receipt: {}', receipt);
             })
             .on('confirmation', (confirmationNumber, receipt) => {
                 // confirmed by other accounts ???
-                log.info(TAG, 'methods.payOrder.confirmation: %j, %j', confirmationNumber, receipt)
+                LOG.info('methods.payOrder.confirmation: {}, {}', confirmationNumber, receipt);
             })
             .on('error', (error, receipt) => {
-                log.info(TAG, 'methods.payOrder.error: %j, %j', error, receipt)
+                LOG.info('methods.payOrder.error: {}, {}', error, receipt);
             });
         return 0;
     }
@@ -105,10 +107,10 @@ export class PaymentContract {
     private async createTxParams(data: string, price: string, to: string): Promise<TransactionData> {
         const accountAddress = this.connector.getAccountAddress(); // sender wallet address
         const receiverAddress = this.connector.getReceiverAddress(); // contract address
-        log.info(TAG, `from: ${accountAddress}, to: ${to}, through: ${receiverAddress}`);
+        LOG.info(`from: ${accountAddress}, to: ${to}, through: ${receiverAddress}`);
 
         const price_token = new BN(Web3.utils.toWei(price, 'ether'));
-        log.info(TAG, `price_token by 'ether', ${price_token}`);
+        LOG.info(`price_token by 'ether', ${price_token}`);
 
         const txData = {
             from: accountAddress,
@@ -119,7 +121,7 @@ export class PaymentContract {
 
         try {
             const txGas = await this.connector.getWeb3().eth.estimateGas(txData);
-            log.info(TAG, `after this.web3.eth.estimateGas: ${txData}`);
+            LOG.info(`after this.web3.eth.estimateGas: ${txData}`);
             const gasPrice = await this.connector.getWeb3().eth.getGasPrice();
             return  {
                 from: accountAddress,

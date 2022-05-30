@@ -14,7 +14,6 @@
   "dependencies": {
     "@walletconnect/web3-provider": "^1.7.8",
     "bn.js": "^5.2.1",
-    "npmlog": "^6.0.2",
     "web3": "^1.7.3"
   },
   "repository": {

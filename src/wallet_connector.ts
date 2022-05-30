@@ -1,10 +1,11 @@
 import Web3 from 'web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import {log} from "npmlog";
 import {Config} from "./config";
 import paymentAbi from './order_abi.json';
+import {Logger} from "./logger";
 
 const TAG = 'WalletConnector';
+const LOG = new Logger("WalletConnector");
 
 
 /**
@@ -36,7 +37,7 @@ export class WalletConnector {
      */
     constructor(testnet = false) {
         this.setTestMode(testnet);
-        log.info(TAG, 'this.rpc: %j', this.rpc);
+        LOG.info('this.rpc: {}', this.rpc);
     }
 
     /**
@@ -47,7 +48,7 @@ export class WalletConnector {
         this.web3 = new Web3(this.provider as any);
         this.accountAddress = (await this.web3.eth.getAccounts())[0];
         this.contract = new this.web3.eth.Contract(paymentAbi as any, this.paymentAddr);
-        log.info('connector initialized.');
+        LOG.info('connector initialized.');
         return this;
     }
 
@@ -78,7 +79,7 @@ export class WalletConnector {
 
         // Subscribe to accounts change
         this.provider.on('accountsChanged', (accounts: string[]) => {
-            log.info(TAG, 'accountsChanged: %j', accounts.length > 0 ? accounts[0] : null);
+            LOG.info('accountsChanged: {}', accounts.length > 0 ? accounts[0] : null);
             if (accounts.length > 0) {
                 this.accountAddress = accounts[0];
             }
@@ -86,17 +87,17 @@ export class WalletConnector {
 
         // Subscribe to chainId change
         this.provider.on('chainChanged', (chainId: number) => {
-            log.info(TAG, 'chainChanged: %j', chainId);
+            LOG.info('chainChanged: {}', chainId);
         });
 
         // wallet error
         this.provider.on('error', (errors) => {
-            log.error(TAG, "wallet connect error: %j", errors);
+            LOG.error("wallet connect error: {}", errors);
         });
 
         // Subscribe to session disconnection
         this.provider.on('disconnect', async (code, reason) => {
-            log.error(TAG, "disconnect: %j, %j", code, reason);
+            LOG.error("disconnect: {}, {}", code, reason);
             await this.closeProvider();
         });
 
@@ -108,7 +109,7 @@ export class WalletConnector {
         try {
             await this.provider.disconnect();
         } catch (error) {
-            log.error(TAG, "failed to disconnect and close: %j", error);
+            LOG.info("failed to disconnect and close: {}", error);
         }
     }
 

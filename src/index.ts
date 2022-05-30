@@ -1,8 +1,8 @@
 import { PaymentContract } from "./payment_contract";
 import { WalletConnector } from "./wallet_connector";
-import {log} from "npmlog";
+import {Logger} from "./logger";
 
-log.level = 'info';
+Logger.setDefaultLevel(Logger.DEBUG);
 
 export {
     PaymentContract,
