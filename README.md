@@ -22,23 +22,23 @@ npm run build
 mainnet usage:
 
 ```typescript
-    // mainnet
-    const contract = await new PaymentContract().initialize();
-    
-    // access API
-    const newOrderId = contract.payOrder(2.5, dstWalletAddress, orderProof)
-    const orders = contract.getOrders();
-    const order = contract.getOrder(1023);
+// mainnet
+const contract = await new PaymentContract().initialize();
+
+// access API
+const newOrderId = contract.payOrder(2.5, dstWalletAddress, orderProof)
+const orders = contract.getOrders();
+const order = contract.getOrder(1023);
 ```                                           
 
 testnet usage:
 
-```
-    // testnet
-    const contract = await new PaymentContract(true).initialize();
+```typescript
+// testnet
+const contract = await new PaymentContract(true).initialize();
 
-    // access API
-    const newOrderId = contract.payOrder(2.5, dstWalletAddress, orderProof)
-    const orders = contract.getOrders();
-    const order = contract.getOrder(1023);
+// access API
+const newOrderId = contract.payOrder(2.5, dstWalletAddress, orderProof)
+const orders = contract.getOrders();
+const order = contract.getOrder(1023);
 ```
