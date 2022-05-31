@@ -42,7 +42,7 @@ export class PaymentContract {
     }
 
     /**
-     * Pay order on the smart contract.
+     * Pay order on the smart contract for current wallet account.
      *
      * @param amount The amount of ELA to upgrade vault&backup
      * @param to The hive node wallet address.
@@ -102,13 +102,33 @@ export class PaymentContract {
     }
 
     /**
-     * Pay order on the smart contract.
+     * Get all orders for current wallet account.
      */
     async getOrders() {
         const accountAddress = await this.connector.getAccountAddress();
         return await this.connector.getContract().methods.getOrders(accountAddress).call();
     }
 
+    /**
+     * Get specific order by index for current wallet account.
+     */
+    async getOrderByIndex(index: number) {
+        const accountAddress = await this.connector.getAccountAddress();
+        return await this.connector.getContract().methods.getOrderByAddress(accountAddress, index).call();
+    }
+
+    /**
+     * Get the count of payment orders for current wallet account.
+     */
+    async getOrderCount() {
+        const accountAddress = await this.connector.getAccountAddress();
+        return await this.connector.getContract().methods.getOrderCountByAddress(accountAddress).call();
+    }
+
+    /**
+     * Get order by order ID which belongs to any wallet account
+     * @param orderId
+     */
     async getOrder(orderId) {
         return await this.connector.getContract().methods.getOrder(orderId).call();
     }
