@@ -2,7 +2,7 @@
 
 Elastos Hive Payment JS SDK is for the payment service of [Elastos Hive JS SDK](https://github.com/elastos/Elastos.Hive.JS.SDK)
 
-The payment service supports essentials and metamask applications.
+The payment service supports `essentials` and `metamask` applications.
 
 ## Install
 
