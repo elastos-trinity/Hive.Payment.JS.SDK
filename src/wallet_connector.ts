@@ -1,7 +1,7 @@
 import Web3 from 'web3';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import {Config} from "./config";
-import paymentAbi from './order_abi.json';
+import paymentAbi from './payment_abi.json';
 import {Logger} from "./logger";
 
 const LOG = new Logger("WalletConnector");

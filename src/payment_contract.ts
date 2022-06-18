@@ -132,4 +132,11 @@ export class PaymentContract {
     async getOrder(orderId) {
         return await this.connector.getContract().methods.getOrder(orderId).call();
     }
+
+    /**
+     * Get platform address and fee.
+     */
+    async getPlatformFee() {
+        return await this.connector.getContract().methods.getPlatformFee().call();
+    }
 }
