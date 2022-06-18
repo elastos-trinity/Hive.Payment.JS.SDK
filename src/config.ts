@@ -10,5 +10,5 @@ export class Config {
     /** TestNet */
     static CONTRACT_TEST_URI = 'https://api-testnet.' + Config.BASE_API + '/eth';
     static CONTRACT_TEST_RPC = {21: Config.CONTRACT_TEST_URI}
-    static HIVE_NODE_TEST_ADDRESS = '0x2056451a53278f4Ef51663aA48dAea0BA0056BE8';
+    static HIVE_NODE_TEST_ADDRESS = '0x81897263EC51A2314d256703b2B9f57664B772a9';
 }

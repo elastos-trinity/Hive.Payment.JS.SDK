@@ -1,6 +1,6 @@
 {
   "name": "@elastosfoundation/hive-payment-js-sdk",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Elastos Hive Payment JS SDK",
   "main": "dist/index.js",
   "typings": "typings",
